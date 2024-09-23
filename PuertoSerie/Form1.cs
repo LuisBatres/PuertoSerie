@@ -29,6 +29,7 @@ namespace PuertoSerie
             {
                 sp.PortName = cmbPuertos.Text;
                 sp.Open();
+                MessageBox.Show("Conectado");
                 sp.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
 
 
