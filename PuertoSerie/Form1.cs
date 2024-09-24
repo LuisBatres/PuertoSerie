@@ -6,6 +6,8 @@ namespace PuertoSerie
 
 
         SerialPort sp = new SerialPort();
+        SerialPort sp2= new SerialPort();
+        string[] puertos;
 
         public frmSerie()
         {
@@ -14,23 +16,50 @@ namespace PuertoSerie
 
         private void frmSerie_Load(object sender, EventArgs e)
         {
-            string[] puertos = SerialPort.GetPortNames(); cmbPuertos.DataSource = SerialPort.GetPortNames();
+            actualizarPuertos();
+            cmbPuertos.DataSource = puertos;
+
         }
 
+        private void actualizarPuertos()
+        {
+            puertos = SerialPort.GetPortNames(); cmbPuertos.DataSource = SerialPort.GetPortNames();
+        }
         private void btnEnviar_Click(object sender, EventArgs e)
         {
-            sp.WriteLine(txtEnviar.Text);
-            txtEnviar.Clear();
+            if (chkBlue.Checked)
+            {
+
+                sp2.WriteLine(txtEnviar.Text);
+                txtEnviar.Clear();
+            }
+            else
+            {
+                sp.WriteLine(txtEnviar.Text);
+                txtEnviar.Clear();
+            }
         }
 
         private void btnConectar_Click(object sender, EventArgs e)
         {
             try
             {
-                sp.PortName = cmbPuertos.Text;
-                sp.Open();
-                MessageBox.Show("Conectado");
-                sp.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
+                if (chkBlue.Checked)
+                {
+                    sp.PortName = cmbPuertos.Text;
+                    sp.Open();
+                    sp2.PortName = cmbPuertos2.Text;
+                    sp2.Open();
+                    MessageBox.Show("Conectado");
+                    sp.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
+                }
+                else
+                {
+                    sp.PortName = cmbPuertos.Text;
+                    sp.Open();
+                    MessageBox.Show("Conectado");
+                    sp.DataReceived += new SerialDataReceivedEventHandler(SerialPort_DataReceived);
+                }
 
 
             }
@@ -55,7 +84,35 @@ namespace PuertoSerie
 
         private void btnActualizar_Click(object sender, EventArgs e)
         {
-            string[] puertos = SerialPort.GetPortNames(); cmbPuertos.DataSource = SerialPort.GetPortNames();
+            actualizarPuertos();
+            cmbPuertos.DataSource = puertos;
+            cmbPuertos2.DataSource = puertos;
+        }
+
+        private void chkBlue_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkBlue.Checked == true)
+            {
+                cmbPuertos2.Enabled = true;
+                actualizarPuertos();
+                cmbPuertos2.DataSource = puertos;
+                label1.Text = "Puerto Serie (Entrada)";
+            }
+            else
+            {
+                cmbPuertos2.Enabled = false;
+                label1.Text = "Puerto Serie";
+            }
+        }
+
+        private void frmSerie_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (sp.IsOpen == true) { 
+                sp.Close();
+            }
+            if (sp2.IsOpen == true) {
+                sp2.Close();
+            }
         }
     }
 }
